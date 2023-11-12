@@ -31,7 +31,9 @@
   		<link rel="stylesheet" href="/resources/css/common/common.css">
   		<link rel="stylesheet" href="/resources/css/common/header.css">
   		<link rel="stylesheet" href="/resources/css/common/pop.css">
-  		
+  		<link rel="stylesheet" href="/resources/css/common/bootstrap.css">
+<link rel="stylesheet" href="/resources/css/common/bootstrap.min.css">
+
   		<script src="/resources/js/member/questionList.js"></script>
   		<script src="/resources/js/common/common.js"></script>
   		<script src="/resources/js/common/pop.js"></script>
@@ -48,15 +50,7 @@
  				console.log("글 번호: "+question);
  				let selectedValue = $("#yourSelectElement").val()
  				
- 				//상세 페이지로 이동하기 위해 form추가 id: detailForm
- 			/* $("#inquiryForm").attr({
- 					"method":"get",
- 					"action":"/member/questionDetail"
- 				});
- 				
- 				
- 				
- 				$("#inquiryForm").submit();   */
+ 			
  				
  				
  				location.href = "/member/questionDetail?inquiryNum="+question
@@ -148,6 +142,39 @@
                         </tbody> 
                     </table>
                
+               
+               
+                     <!-- =====================================페이징 출력 시작 ========================== -->
+      <div class="pull-right">
+      
+     
+      
+      	<ul class="pagination justify-content-center"">
+      		<!-- 이전 바로가기 10개 존재 여부를 prev 필드의 값으로 확인. -->
+      	 	<c:if test="${pageMaker.prev}">
+      			<li class="page-item disabled">
+      				<a href="${pageMaker.startPage - 1}" class="page-link" tabindex="-1">Previous</a>
+      			</li>
+      		</c:if>
+      		
+ 		
+      		<c:forEach begin="${pageMaker.startPage}" end="${pageMaker.endPage}" var="num">
+      			<li class = "page-item ${pageMaker.cvo.pageNum == num ? 'active' : ''}"><a class="page-link" href="#">${num}</a></li>
+      		</c:forEach>
+      		      		
+      		
+      		<!-- 다음 바로가기 10개 존재 여부를 next 필드의 값으로 확인. -->
+      		 <c:if test="${pageMaker.next}">
+      			<li class="pagination_button next page-item" >
+      				<a href="${pageMaker.endPage + 1}" class="page-link">Next</a>
+      			</li>
+      		</c:if>
+      		
+        	</ul>
+      </div>
+               
+               
+         
 
             </div>
 
