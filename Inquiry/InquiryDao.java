@@ -10,7 +10,9 @@ import com.soolwhale.client.inquiry.vo.InquiryVO;
 @Mapper
 public interface InquiryDao {
 	public List<InquiryVO> inquiryList(InquiryVO ivo); 
+	
 	public int inquiryInsert(InquiryVO ivo);
+	
 	public InquiryVO inquiryDetail(InquiryVO ivo); 
 	
 	public int inquiryUpdate(InquiryVO ivo) throws Exception;
