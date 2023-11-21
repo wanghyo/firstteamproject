@@ -1,8 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    <%@ page trimDirectiveWhitespaces="true" %>
-    <%@ include file="/WEB-INF/views/client/common/header.jsp"%>
-   
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ include file="/WEB-INF/views/client/common/header.jsp"%>  
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -17,7 +15,6 @@
 		<title>내 정보 보기</title>
 		
 	    <script src="/resources/js/common/jquery-3.7.0.min.js"></script>
-<!--   		<script src="/resources/js/common/jquery-1.12.4.min.js"></script> -->
   		<!-- Add the slick-theme.css if you want default styling -->
 		<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
 		<!-- Add the slick-theme.css if you want default styling -->
@@ -26,18 +23,16 @@
   		<script src="https://kit.fontawesome.com/312ff11b0d.js" crossorigin="anonymous"></script>
   		
   		<link rel="stylesheet" href="/resources/css/member/myInfo.css">
-  	
+  	  
   		<link rel="stylesheet" href="/resources/css/common/aside.css">
   		<link rel="stylesheet" href="/resources/css/common/common.css">
   		<link rel="stylesheet" href="/resources/css/common/header.css">
   		<link rel="stylesheet" href="/resources/css/common/pop.css">
   		
-  		<script src="/resources/js/member/myInfo.js"></script>
+  		 <script src="/resources/js/member/myInfo_phone.js"></script>
   		<script src="/resources/js/common/common.js"></script>
   		<script src="/resources/js/common/sidebutton.js"></script>
   		<script src="/resources/js/common/pop.js"></script>
- 		
- 		
  
 </head>
 <body>
@@ -78,9 +73,6 @@
             <form name="f_data" id="f_data">
             		<input type="hidden" name="email" value="${email}" />
             </form>
-            
-            
-            	
                 <table class="my_info_table" id="my_info_table">
                
                     <tr>
@@ -95,26 +87,32 @@
                         <td>${userData.name}</td>
                     </tr>
                     <tr>
-                   
                         <td class="td_mid-title">별칭</td>
                         <td>
-                    <form class="my_info_f" id="my_info_f">
-                    	  <input type="hidden" name="email" value="${email}" />
-                          <input type="text" name="userNickname" class="userNickname uborder" id="userNickname" value = "${userData.userNickname}" /> 
+                    	<form class="my_info_f" id="my_info_f">
+                    	  	<input type="hidden" name="email" value="${email}" />
+                          	<input type="text" name="userNickname" class="userNickname uborder" id="userNickname" value = "${userData.userNickname}" /> 
                           
-                          <input type="button" class="un_btn btn" id="un_btn" name="un_btn" value="별명 수정">
-                           <div id="charCount">0/6</div>
-                    </form> 
-                           </td>
+                          	<input type="button" class="un_btn btn" id="un_btn" name="un_btn" value="별명 수정">
+                        	<div id="charCount">0/6</div>
+                 		</form> 
+                        </td>
                    
                     </tr>
-                   <tr>
+                    <tr>
                         <td class="td_mid-title">핸드폰</td>
                        
                         <td>
+                        <form id="phoneUpdate">
                          <input type="hidden" name="email" value="${email}" />
-                        <input type="text" name="phoneNumber" class="phoneNumber uborder" id="phoneNumber" value = "${userData.phoneNumber}" />  
-                        <input type="button" class="pn_btn btn" id="pn_btn" name="pn_btn" value="휴대폰 번호 수정">
+                         	 <select>
+                            	<option value="">대한민국 +82</option>
+                       		 </select>
+                       		 <input type="text" name="phoneNumber" class="phoneNumber uborder" id="phoneNumber" value = "${userData.phoneNumber}" />  
+                       		 <input type="button" class="phoneVerificationBtn btn" id="phoneVerificationBtn" name="pn_btn" value="휴대폰 번호 수정 인증번호 요청"> <br>
+                  			 <input type="text" placeholder="인증번호를 입력하세요" id="identityVerification" name="identityVerification"> 
+                  			 <input type="button" id="verifyCodeBtn" name="verifyCodeBtn" class="btn" value="인증확인">
+                        </form>
                         </td>
           
                     </tr>
@@ -123,13 +121,12 @@
                         <td class="td_mid-title">비밀번호</td>
                         <td class="pass_wrap">
                             <span>비밀번호 변경</span> <br>
- 					<form id="re_pwd_form" class="re_pwd_form" >
- 							<input type="hidden" name="email" value="${email}" />
-
-                            <input type="password" name="password" id="re_pwd" class="re_pwd uborder" placeholder="새 비밀번호"  /> <br />
-                            <input type="password" name="re_pwd_con" id="re_pwd_con" class="re_pwd_con uborder" placeholder="새 비밀번호 확인"/> 
-                            <input type="button" class="re_btn btn" id="re_btn" name="re_btn" value="비밀번호 수정">
-                     </form>
+ 							<form id="re_pwd_form" class="re_pwd_form" >
+ 								<input type="hidden" name="email" value="${email}" />
+                           	 	<input type="password" name="password" id="re_pwd" class="re_pwd uborder" placeholder="새 비밀번호"  /> <br />
+                           	 	<input type="password" name="re_pwd_con" id="re_pwd_con" class="re_pwd_con uborder" placeholder="새 비밀번호 확인"/> 
+                           		<input type="button" class="re_btn btn" id="re_btn" name="re_btn" value="비밀번호 수정">
+	                   		</form>
                         </td>
                     </tr>
  
@@ -140,11 +137,6 @@
                 </div>
             
         </section>
-
-
-
     </div>
 </div>
-
-
    <%@ include file="/WEB-INF/views/client/common/footer.jsp"%>
