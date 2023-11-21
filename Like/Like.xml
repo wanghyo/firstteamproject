@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soolwhale.client.like.dao.LikeDao">
+<resultMap type="like" id="likeResultMap">
+	<id column="like_num" property="likeNum"/>
+    <result column="project_num" property="projectNum"/>
+    <result column="user_num" property="userNum"/>
+    	<association property="project">
+  			<result column="project_num" property="projectNum"/>
+  			<result column="title" property="title"/>
+  			<result column="w_desc" property="projectDesc"/>
+  			<result column="sts" property="sts"/>
+  			<result column="start_date" property="startDate"/>
+  			<result column="end_date" property="endDate"/>				
+  			<result column="target_amount" property="targetAmount"/>
+  			<result column="FIRST_IMG_FILENAME" property="firstImgFilename"/>
+		  </association>
+  		<association property="user">
+  			<result column="name" property="name"/>
+  			<result column="user_num" property="userNum" />
+  		</association>	
+</resultMap>
+
+	<select id="likeAllList"   resultMap="likeResultMap">
+		SELECT * FROM w_like
+		INNER JOIN w_project ON w_like.project_num = w_project.project_num and w_like.user_num = #{userNum, jdbcType=VARCHAR}
+	  ORDER BY w_project.start_date
+    </select>
+    
+	<select id="likeAfter" parameterType="like" resultMap="likeResultMap">
+	    <![CDATA[
+		    select * from w_like
+		    inner join w_project on w_like.project_num = w_project.project_num and w_like.user_num = #{userNum, jdbcType=VARCHAR}
+		    and w_project.end_date < sysdate 
+		    order by w_project.start_date
+	    ]]>
+	</select>
+
+	<select id="likeBefore" parameterType="like" resultMap="likeResultMap">
+	    <![CDATA[
+		    select * from w_like
+		    inner join w_project on w_like.project_num = w_project.project_num and w_like.user_num = #{userNum, jdbcType=VARCHAR}
+		    and w_project.start_date > sysdate
+		    order by w_project.start_date
+	    ]]>
+	</select>
+  
+	<select id="likeIng" parameterType="like" resultMap="likeResultMap">
+	    <![CDATA[
+		    select * from w_like
+		    inner join w_project on w_like.project_num = w_project.project_num and w_like.user_num = #{userNum, jdbcType=VARCHAR}
+		    and w_project.end_date > sysdate
+		    order by w_project.start_date
+	    ]]>
+	</select>
+
+</mapper>
