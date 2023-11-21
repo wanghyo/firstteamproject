@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soolwhale.client.user.dao.UserDao">
+   <resultMap type="user" id="userMap" >
+      <id column="user_num" property="userNum"/>
+      <result column="identity_verification" property="identityVerification"/>
+      <result column="name" property="name"/>
+      <result column="email" property="email"/>
+      <result column="id" property="id"/>
+      <result column="phone_number" property="phoneNumber"/>
+      <result column="password" property="password"/>
+      <result column="profile_img" property="profileImg"/>
+      <result column="use_YN" property="useYN"/>
+      <result column="sex" property="sex"/>
+      <result column="point" property="point"/>
+      <result column="join_date" property="joinDate"/>
+      <result column="u_modify_date" property="uModifyDate"/>
+      <result column="user_nickname" property="userNickname"/>
+   </resultMap>  
+
+  <!-- 비밀번호 확인 -->
+	<select id="rePwdConfirm" parameterType="user" resultType="int">
+		SELECT
+			NVL(( SELECT 1 FROM w_user
+				  WHERE email = #{email} AND password=#{password}
+			), 0) as state
+		FROM dual
+	</select>
+
+	<!-- 마이페이지 조회 -->
+	<select id="myInfoPage" parameterType ="user" resultMap="userMap">
+		select user_num, name, email, phone_number, password, user_nickname,id
+		from w_user
+		where email = #{email}	
+	</select> 
+
+	<!-- 탈퇴 처리 -->
+	<update id="userDelete" parameterType="user">
+		update w_user
+		set use_yn = 'N' 
+		where email = #{email}
+	</update>
+	
+	<!-- 비밀번호 변경 -->
+  <update id="myInfoUpdate" parameterType="user">
+		update w_user
+		set password= #{password, jdbcType=VARCHAR}
+		where email=#{email}
+	</update>
+    
+    <!-- 닉네임 변경 -->
+ 	<update id="userNicknameUpdate" parameterType="user">
+		update w_user
+		set user_nickname= #{userNickname, jdbcType=VARCHAR}
+		where email=#{email}
+	</update>
+    
+    <!-- 폰 번호 변경 -->
+    <update id="userPhoneUpdate" parameterType="user">
+      update w_user
+  		set phone_number = #{phoneNumber, jdbcType=VARCHAR}
+  		where email=#{email} 
+    </update>
+
+</mapper>
