@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.soolwhale.client.payment.dao.PaymentDao">
+	<resultMap type="payment" id="paymentResultMap">
+		<id column="payment_num" property="paymentNum" />
+		<result property="rownum" column="rownum" />
+		<result column="use_point" property="usePoint" />
+		<result column="delivery_charge" property="deliveryCharge" />
+		<result column="payment_date" property="paymentDate" />
+		<result column="addr_num" property="addrNum" />
+		<result column="user_num" property="userNum" />
+		<result column="delivery_YN" property="deliveryYN" />
+		<result column="pay_amount" property="payAmount" />
+		<result column="project_num" property="projectNum" />
+		<result column="payment_method" property="paymentMethod" />
+		<result column="add_point" property="addPoint" />
+		<result column="reward" property="singleReward"
+			jdbcType="VARCHAR" />
+		<result column="payment_count" property="paymentCount" />
+		<result column="total_amount" property="totalAmount" />
+		<result column="billing_key" property="billingKey" />
+		<result column="merchant_uid" property="merchantUid" />
+		<association property="project">
+			<result column="project_num" property="projectNum" />
+			<result column="title" property="title" />
+			<result column="end_date" property="endDate" />
+			<result column="sts" property="sts" />
+			<result column="first_img_filename" property="firstImgFilename" />
+		</association>
+		<association property="user">
+			<result column="user_num" property="userNum" />
+			<result column="name" property="name" />
+			<result column="phone_number" property="phoneNumber" />
+			<result column="email" property="email" />
+		</association>
+		<association property="rewardr">
+			<result column="reward" property="reward" />
+			<result column="project_num" property="projectNum" />
+			<result column="reward_name" property="rewardName" />
+			<result column="reward_desc" property="rewardDesc" />
+			<result column="reward_charge" property="rewardCharge" />
+			<result column="amount" property="amount" />
+		</association>
+		<association property="address">
+			<result column="addr_num" property="addrNum" />
+			<result column="zipcode" property="zipcode" />
+			<result column="addr" property="addr" />
+			<result column="addr_detail" property="addrDetail" />
+			<result column="req" property="req" />
+			<result column="recipient" property="recipient" />
+			<result column="tel" property="tel" />
+			<result column="user_num" property="userNum" />
+		</association>
+
+	</resultMap>
+
+	<select id="paymentList" parameterType="payment" resultMap="paymentResultMap">
+		SELECT
+			distinct pay.merchant_uid,
+			rownum ro, pay.payment_num as payment_num, pay.project_num AS project_num, to_char(pay.payment_date,'YYYY-MM-DD') AS payment_date,
+			pay.billing_key, pay.user_num AS user_num, pay.delivery_YN,
+			proj.sts as sts, proj.title AS title
+		FROM w_payment pay
+		JOIN w_project proj ON pay.project_num = proj.project_num
+		WHERE pay.user_num = #{userNum, jdbcType=VARCHAR}
+		ORDER BY ro desc
+	</select>
+
+
+	<select id="paymentListDetail" parameterType="payment" resultMap="paymentResultMap">
+		SELECT
+			wp.payment_num, wp.use_point, wp.delivery_charge, to_char(wp.payment_date, 'YYYY-MM-DD') payment_date,
+			wp.delivery_YN, wp.merchant_uid, wp.user_num,
+			wa.addr, wa.zipcode, wa.addr_detail, wa.recipient, wa.tel,
+			wr.reward_name, wr.reward_desc, wr.amount,
+			wpr.title, wpr.liquor_type, wpr.maker_name, wpr.maker_desc, wpr.first_img_filename, wpr.first_video,
+			wu.email
+		FROM w_payment wp
+		JOIN w_address wa ON wp.addr_num = wa.addr_num
+		JOIN w_reward wr ON wp.reward = wr.reward
+		JOIN w_project wpr ON wp.project_num = wpr.project_num
+		JOIN w_user wu on wu.user_num = wp.user_num
+		WHERE wp.user_num = #{user.userNum, jdbcType=VARCHAR}
+		AND wp.merchant_uid = #{merchantUid, jdbcType=VARCHAR}
+	</select>
+
+
+	<select id="paymentListDetailChoice"	resultMap="paymentResultMap">
+		SELECT
+			wp.payment_num, wp.use_point, wp.delivery_charge, wp.delivery_YN, wp.PAYMENT_METHOD,
+			wp.merchant_uid, wp.user_num,
+			wp.payment_date, wp.PAY_AMOUNT,
+			wa.addr, wa.zipcode, wa.addr_detail, wa.recipient, wa.tel, wa.req,
+			wr.reward_name, wr.reward_desc, wr.amount,
+			wpr.title, wpr.liquor_type, wpr.maker_name, wpr.maker_desc, wpr.first_img_filename, wpr.first_video,
+			wu.name, wu.phone_number, wu.email
+		FROM w_payment wp
+		JOIN w_address wa ON wp.addr_num = wa.addr_num
+		JOIN w_reward wr ON wp.reward = wr.reward
+		JOIN w_project wpr ON wp.project_num = wpr.project_num
+		JOIN w_user wu on wu.user_num = wp.user_num
+		WHERE wp.user_num = #{user.userNum, jdbcType=VARCHAR}
+		AND wp.merchant_uid = #{merchantUid, jdbcType=VARCHAR}
+	</select>
+
+</mapper>
