@@ -40,43 +40,9 @@ public class InquiryController {
 	
 	@Setter(onMethod_ = @Autowired)
 	private UserService userService;
-	
 
 	
-
-	
-
-//	@GetMapping(value="/questionList")
-//	public String inquirylist(Model model, @SessionAttribute(name = "user", required = false)UserVO user,  InquiryVO ivo,HttpSession session ) {
-//	     
-//		//UserVO users = (UserVO) session.getAttribute("user");
-//		System.out.println("questionList 호출 성공");
-//		System.out.println("user : " + user);
-//		
-//	    if (user != null) {
-//	
-//	    	ivo.setUser(user);
-//	    	ivo.setUserNum(user.getUserNum());
-//	    	
-//			ivo.setId(user.getId());
-//			
-//	        List<InquiryVO> inquiryList = inquiryService.inquiryList(ivo);
-//	        
-//	       log.info("리스트 확인 : {}", inquiryList);
-//			model.addAttribute("inquiryList", inquiryList);
-//			model.addAttribute("user" , user);
-//			model.addAttribute("userNum", user.getUserNum());
-//			model.addAttribute("id", user.getId());
-//			
-//			return "client/member/questionList"; // 로그인 상태이므로 원하는 페이지로 리디렉션
-//	    } else {
-//	        // 세션에 로그인 정보가 없음
-//	        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
-//	    }
-//	}
-//	
-	
-	
+	// 문의글 리스트
 	@GetMapping(value="/questionList")
 	public String inquirylist(Model model, @SessionAttribute(name = "user", required = false)UserVO user,  InquiryVO ivo, CommonVO cvo, HttpSession session ) {
 	     
@@ -108,7 +74,8 @@ public class InquiryController {
 	        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
 	    }
 	}
-	
+
+	// 문의글 작성 폼 호출
 	@GetMapping("/questionForm")
 	public String questionForm(Model model, @SessionAttribute(name = "user", required = false)UserVO user,  InquiryVO ivo,HttpSession session ) {
 		log.info("questionForm 호출 성공");
@@ -133,10 +100,10 @@ public class InquiryController {
 	
 	
 	
-	
+	// 문의글 작성 메소드
 	@GetMapping(value="/questionInsert")
 	public String inquiryInsert(InquiryVO ivo, Model model,  @SessionAttribute(name = "user", required = false)UserVO user, HttpSession session) throws Exception{
-		log.info("questionInsert 화면 호출");
+		log.info("questionInsert  호출");
 	
 		if(user != null) {
 		int result = 0;
@@ -156,12 +123,14 @@ public class InquiryController {
 			return "redirect:/member/login";
 		}
 		
-	}	
+	}
+
+	// 문의글 상세페이지
 	@GetMapping("/questionDetail")
 	public String inquiryDetail(@ModelAttribute InquiryVO ivo, Model model,@SessionAttribute(name = "user", required = false)UserVO user, HttpSession session ) {
 		
 	
-	    if (user != null) {
+	    if (user != null) {  // 로그인 상태일때
 	    	
 			log.info("inquiryDetail 메서드 호출 성공");
 			log.info("uvo" + user);
@@ -179,41 +148,18 @@ public class InquiryController {
 			model.addAttribute(ivo.getUserNum());
 			
 			return "/client/member/questionDetail";
-	        
-	        // 로그인 상태이므로 원하는 페이지로 리디렉션
 	    } else {
-	        // 세션에 로그인 정보가 없음
-	        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
+	       
+	        return "redirect:/member/login"; // 로그아웃 상태일때
 	    }
 	}
 	
 	
-	@GetMapping(value = "/questionUpdate")
-	public String inquiryUpdate(@ModelAttribute InquiryVO ivo,  @SessionAttribute("user") UserVO user )  throws Exception {
-		log.info("inquiryUpdate 호출 성공 ");
-		log.info("inquiry_num :" + ivo.getInquiryNum());
-		
-		int result = 0;
-		String url="";
-		ivo.setUser(user);
-		
-		result = inquiryService.inquiryUpdate(ivo);
-		
-		if(result == 1 ) {
-			url = "client/member/questionList";
-		}else {
-			url = "client/member/questionDetail";
-		}
-		
-		
-		return "redirect:" + url;
-	}
 
+	// 문의글 수정 페이지 호출
 	@GetMapping(value = "/questionUpdateform")
-	public String inquiryUpdateForm(@ModelAttribute InquiryVO ivo, 
-			@SessionAttribute(name = "user", required = false)UserVO user, 
-			HttpSession session , Model model,
-			@RequestParam("inquiryNum") String inquiryNum)  throws Exception {
+	public String inquiryUpdateForm(@ModelAttribute InquiryVO ivo, 	@SessionAttribute(name = "user", required = false)UserVO user, 	HttpSession session , Model model,
+					@RequestParam("inquiryNum") String inquiryNum)  throws Exception {
 		
 		log.info("updateForm 호출!");
 		log.info("inquiryNum = " + ivo.getInquiryNum());
@@ -227,53 +173,48 @@ public class InquiryController {
 		model.addAttribute("inquiryQ", ivo.getInquiryQ());
 		model.addAttribute("inquiryTitle", ivo.getInquiryTitle());
 		model.addAttribute("inquiryNum", inquiryNum);
-		
-		
-		
+	
 		return "client/member/questionUpdate";
 	}
 	
-	
+
+	// 문의글 수정 메소드 호출
 	@GetMapping(value = "/inquiryUpdate")
-	public String inquiryUpdate(@ModelAttribute InquiryVO ivo,
-			@SessionAttribute(name = "user", required = false)UserVO user,
-			HttpSession session,Model model,
-			@RequestParam("inquiryNum") String inquiryNum
-			)  throws Exception {
-		
-		
+	public String inquiryUpdate(@ModelAttribute InquiryVO ivo, @SessionAttribute(name = "user", required = false)UserVO user, HttpSession session,Model model,
+				@RequestParam("inquiryNum") String inquiryNum)  throws Exception {
+	
 		log.info("inquiryUpdate 호출 성공 ");
 		log.info("inquiry_num :" +inquiryNum);
 	
 		if(user != null) {
 		
 		
-		int result = 0;
-		ivo.setUser(user);
-		ivo.setInquiryNum(inquiryNum);
-		ivo.setInquiryQ(ivo.getInquiryQ());
-		ivo.setInquiryTitle(ivo.getInquiryTitle());
-		ivo.setCat(ivo.getCat());
-		ivo.setUserType(ivo.getUserType());
-		ivo.setUserNum(ivo.getUserNum());
-
-		log.info("ivo", ivo);
-		log.info("ivo: {}", ivo);
-		model.addAttribute("inquiryQ", ivo.getInquiryQ());
-		model.addAttribute("inquiryTitle", ivo.getInquiryTitle());
-		model.addAttribute("cat", ivo.getCat());
-		model.addAttribute("userType", ivo.getUserType());
-		model.addAttribute("userNum", ivo.getUserNum());
+			int result = 0;
+			ivo.setUser(user);
+			ivo.setInquiryNum(inquiryNum);
+			ivo.setInquiryQ(ivo.getInquiryQ());
+			ivo.setInquiryTitle(ivo.getInquiryTitle());
+			ivo.setCat(ivo.getCat());
+			ivo.setUserType(ivo.getUserType());
+			ivo.setUserNum(ivo.getUserNum());
+	
+			log.info("ivo", ivo);
+			log.info("ivo: {}", ivo);
+			model.addAttribute("inquiryQ", ivo.getInquiryQ());
+			model.addAttribute("inquiryTitle", ivo.getInquiryTitle());
+			model.addAttribute("cat", ivo.getCat());
+			model.addAttribute("userType", ivo.getUserType());
+			model.addAttribute("userNum", ivo.getUserNum());
+			
 		
 		
-		
-		result = inquiryService.inquiryUpdate(ivo);
+			result = inquiryService.inquiryUpdate(ivo);
 		
 		if(result == 1 ) {
 			return  "redirect:/member/questionList";
 		}else {
 			log.info("수정안됨" );
-			return "client/member/questionUpdate";
+			return "client/member/questionUpdate";  // 수정폼에 머물기
 		}
 		
 		
@@ -284,33 +225,30 @@ public class InquiryController {
 	    }
 			
 	}
+
+	// 문의글 삭제
 	@GetMapping("/questionDelete")
-	public String questionDelete(@ModelAttribute InquiryVO ivo,
-			@SessionAttribute(name = "user", required = false)UserVO user,
-			HttpSession session,Model model,
-			@RequestParam("inquiryNum") String inquiryNum
-			) throws Exception {
+	public String questionDelete(@ModelAttribute InquiryVO ivo, @SessionAttribute(name = "user", required = false)UserVO user, HttpSession session,Model model, 
+				     @RequestParam("inquiryNum") String inquiryNum) throws Exception {
 		
 		log.info("questionDelete 호출 성공");
 		
 		if(user != null) {
 		
-		int result=0;
-		String url ="";
+			int result=0;
+			String url ="";
 		
-		result = inquiryService.questionDelete(ivo);
+			result = inquiryService.questionDelete(ivo);
 		
 		
-		if(result == 1) {
-			return  "client/member/questionList";
-		}else {
-			return "client/member/questionUpdate";
-		}	
-		}
-		 else {
-		        // 세션에 로그인 정보가 없음
-		        return "redirect:/member/login"; // 로그인 페이지로 리디렉션
-		    }
+			if(result == 1) {
+				return  "client/member/questionList";
+			}else {
+				return "client/member/questionUpdate";
+			}	
+		} else {
+		        return "redirect:/member/login"; // 로그아웃 상태일때
+		 }
 		
 	}
 }
