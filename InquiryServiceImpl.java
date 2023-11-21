@@ -89,20 +89,12 @@ public class InquiryServiceImpl implements InquiryService {
 	@Override
 	public int questionDelete(InquiryVO ivo) throws Exception {
 
-			int result = 0;
+		int result = 0;
 			
-			result = inquiryDao.questionDelete(ivo);
-			return result;
+		result = inquiryDao.questionDelete(ivo);
+		return result;
 		
 	}
 	
 	
-	
-
-	@Override
-	public List<InquiryVO> inquiryList() {
-		List<InquiryVO> list = null;
-		list = inquiryDao.inquiryListManagement();
-		return list;
-	}
 }
