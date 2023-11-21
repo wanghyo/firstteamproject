@@ -7,8 +7,10 @@ import com.soolwhale.client.inquiry.vo.InquiryVO;
 
 public interface InquiryService {
 	public List<InquiryVO> inquiryList(InquiryVO ivo);
+	
 	public int inquiryInsert(InquiryVO ivo);
-	public InquiryVO inquiryDetail(InquiryVO ivo); //update 폼 겸용
+	
+	public InquiryVO inquiryDetail(InquiryVO ivo);
 	
 	public int inquiryUpdate(InquiryVO ivo) throws Exception;
 	
