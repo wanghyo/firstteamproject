@@ -1,0 +1,253 @@
+package com.soolwhale.client.user.controller;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.soolwhale.client.like.service.LikeService;
+import com.soolwhale.client.like.vo.LikeVO;
+import com.soolwhale.client.point.service.PointService;
+import com.soolwhale.client.point.vo.PointVO;
+import com.soolwhale.client.user.service.UserService;
+import com.soolwhale.client.user.vo.UserVO;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+@Controller
+@SessionAttributes("user")
+@RequestMapping(value = "/member/*")
+@Slf4j
+public class UserController {
+
+	@Setter(onMethod_ = @Autowired)
+	private UserService userService;
+
+	@Setter(onMethod_ = @Autowired)
+	private PointService pointService;
+	
+	@Setter(onMethod_ = @Autowired)
+	private LikeService likeService;
+	
+
+	@GetMapping(value="/myInfoMain")
+	public String myInfoMain(Model model, HttpSession session, PointVO pvo, LikeVO lvo
+                        @SessionAttribute(name = "user", required = false)UserVO user,){
+		log.info("myInfoMain 화면 호출");
+		if(user != null) {
+			   pvo.setUser(user);
+		     pvo.setUserNum(user.getUserNum());
+		     user.setUserNum(user.getUserNum());
+		     lvo.setUserNum(user.getUserNum());
+		     log.info("uerNum" + pvo.getUserNum());
+         
+         PointVO pointsum = pointService.pointSum(user.getUserNum());
+		     log.info("pointsum 값은" +  pointsum + "입니다.");
+				 model.addAttribute("pointSum" , pointsum);
+				 List<LikeVO> likeAllList = likeService.likeAllList(lvo);
+				
+				 log.info("LikeAllList-true : " + likeAllList );
+				
+				 model.addAttribute("likeAllList", likeAllList);
+				 model.addAttribute("userNum" , user.getUserNum());
+			   log.info("Controller userNum 값  " + user.getUserNum());
+
+				 return "client/member/myInfoMain";
+		}else {
+			   return "redirect:/member/login"; 
+		}
+	};
+
+	
+	// 회원 탈퇴
+	@PostMapping ("/userDelete")
+    public String userDelete(@SessionAttribute("user") UserVO user, 
+                        HttpSession session, Model model, 
+                        RedirectAttributes redirectAttributes) throws Exception{
+
+		    log.info("user 탈퇴" );
+		
+		    int result = 0;
+        result = userService.userDelete(user);
+        log.info("email : " + user.getEmail());
+        
+        if(result == 1) {
+        	log.info("user 로그아웃 처리");
+    		  session.invalidate();
+    		  return "redirect:/";
+        }else {
+        	return "client/member/myInfo";
+        }
+    }
+	
+	
+	
+	
+// 비밀번호 확인 페이지에서 비밀번호 확인 메소드
+	@ResponseBody
+	@PostMapping(value="/rePwConfirm", produces="text/plain; chardset=UTF-8" )
+	public String repwdConfirm(UserVO pass , HttpServletRequest request) {
+		HttpSession session = request.getSession(false);
+		UserVO user = (UserVO) session.getAttribute("login");
+		log.info("repwConfirm 메서드 호출 성공 0일치 1불일치");
+		log.info("user" + pass.getUserNum());
+		log.info("email" + user.getEmail());
+		String value="";
+		int result=0;
+
+		//입력 성공에 대한 상태값 저장
+		result= userService.rePwdConfirm(pass);
+		
+		if(result==1) {
+			value="성공";
+		}else {
+			value="실패";
+		}
+		log.info("result="+result);
+		log.info("return" + value);
+		return value;	//value값 자체를 브라우저에 출력
+	};
+
+	
+    // 비밀번호 확인 페이지 호출
+    @GetMapping(value = "/pwConfirm")
+    public String pwConfirm(Model model, HttpSession session,
+           @SessionAttribute(name = "user", required = false)UserVO user) {
+	
+	      log.info("pwConfirm 화면 호출");
+        if (user != null) {
+            // 세션에 로그인 정보가 존재함
+    	      log.info("userNum 값" + user.getUserNum());
+    	      log.info("userEmail :" + user.getEmail());
+            model.addAttribute("username", user.getName()); 
+            model.addAttribute("usernum", user.getUserNum()); 
+            session.setAttribute("login", user);
+      	    model.addAttribute("password", user.getPassword());
+		
+	          return "client/member/pwConfirm"; 
+        }else{
+            return "redirect:/member/login"; 
+        }
+	  }
+
+
+    @RequestMapping(value="/myInfo" , method = {RequestMethod.GET, RequestMethod.POST})
+    public String myInfoPage(Model model, HttpSession session,
+                    @SessionAttribute(name = "user", required = false)UserVO user){
+	
+        if (user != null) {
+            model.addAttribute("username", user.getName()); 
+            model.addAttribute("usernum", user.getUserNum()); 
+            model.addAttribute(user);
+		        model.addAttribute("password", user.getPassword());
+		        model.addAttribute("email", user.getEmail());
+		        log.info("myInfo 화면 호출" );
+		        log.info("uvo = " + user);
+
+        		UserVO userData = userService.myInfoPage(user);
+		        model.addAttribute("userData", userData);
+		
+		        return "client/member/myInfo"; 
+        }else{
+            return "redirect:/member/login"; 
+        }
+    }
+
+
+//	@RequestMapping(value="/myInfoUpdate", method={RequestMethod.GET, RequestMethod.POST})
+	@PostMapping(value="/myInfoUpdate" )
+	public String myInfoUpdate(Model model,
+      @ModelAttribute UserVO user, HttpSession session) {
+		        log.info("myInfoUpdate 호출 성공");
+		        log.info("email" + user.getEmail());
+		        log.info("password" + user.getPassword());
+		        int result = 0;
+		        String url = "";
+        		result = userService.myInfoUpdate(user);
+		        log.info("result" + result);
+		        if(result == 1) {
+			          url = "client/member/myInfo";
+		        }else {
+			          url ="redirect:/member/login";
+		        }
+	        	return  url;
+   }
+
+	// 닉네임 변경
+	@PostMapping(value="/nicknameUpdate")
+	public String userNicknameUpdate(Model model, 
+          @ModelAttribute UserVO user, HttpSession session) {
+		
+        log.info("nickname 업데이트 호출");
+		    log.info("email : " + user.getEmail());
+		    log.info("nickname : " + user.getUserNickname());
+		
+		    int result = 0;
+		    String url = "";		
+		    result = userService.userNicknameUpdate(user);
+   	    log.info("nickupdate result : " + result);
+		
+		    if(result == 1) {
+			    url = "client/member/myInfo";
+		    }else {
+			    url ="redirect:/member/login";
+		    }
+		      return url;
+		}
+
+	
+	
+	// 폰 번호 변경
+	@PostMapping("/userPhoneUpdate")
+	public String userPhoneUpdate(Model model, 
+        @ModelAttribute UserVO user, HttpSession session) {
+		log.info("nickname 업데이트 호출");
+		log.info("email" + user.getEmail());
+		log.info("phoneNumber" + user.getPhoneNumber());
+		
+		int result = 0;
+		String url = "";
+		result = userService.userPhoneUpdate(user);
+		
+		log.info("userPhoneUpdate result : " + result);
+		if(result == 1) {
+			url = "client/member/myInfo";
+		}else {
+			url ="redirect:/member/login";
+		}
+		  return url; 
+	}
+	
+}
