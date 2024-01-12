@@ -1,0 +1,80 @@
+package com.soolwhale.client.user.service;
+
+
+import java.io.PrintWriter;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.soolwhale.client.point.vo.PointVO;
+import com.soolwhale.client.user.dao.UserDao;
+import com.soolwhale.client.user.vo.UserVO;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Setter(onMethod_ = @Autowired)
+    private UserDao userDao;
+
+
+
+	@Override
+	public UserVO userData(String userNum) {
+		UserVO uvo = userDao.userData(userNum);
+		return uvo;
+	}
+
+	    
+			@Override
+			public int rePwdConfirm(UserVO pass) {
+				int result = 0;
+				result = userDao.rePwdConfirm(pass);
+				return result;
+			}
+
+			@Override
+			public UserVO myInfoPage(UserVO uvo) {
+ 				UserVO userData = userDao.myInfoPage(uvo);
+				return userData;
+			}
+
+			@Override
+			public int userDelete(UserVO uvo) {
+				int result = 0;
+				result = userDao.userDelete(uvo);
+				return result;
+			}
+		
+
+			@Override
+			public int myInfoUpdate(UserVO uvo) {
+				log.info("update");
+				int result = 0;
+				result = userDao.myInfoUpdate(uvo);
+				
+				return result;
+			}
+
+			@Override
+			public int userNicknameUpdate(UserVO user) {
+				log.info("nicknameUpdate service 호출 성공");
+				int result = 0;
+				result = userDao.userNicknameUpdate(user);
+				return result;
+			}
+
+			@Override
+			public int userPhoneUpdate(UserVO user) {
+				log.info("userPhoneUpdate service 호출 성공");
+				int result = 0;
+				result = userDao.userPhoneUpdate(user);
+				return result;
+			}
+
+}
