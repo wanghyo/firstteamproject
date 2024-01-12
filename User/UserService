@@ -1,0 +1,23 @@
+package com.soolwhale.client.user.service;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.soolwhale.client.point.vo.PointVO;
+import com.soolwhale.client.user.vo.UserVO;
+
+public interface UserService {
+
+	public int rePwdConfirm(UserVO pass);
+
+	public UserVO myInfoPage(UserVO uvo);
+
+	public int userDelete(UserVO uvo) throws Exception;
+
+	public UserVO userData(String userNum);
+
+	public int myInfoUpdate(UserVO uvo);
+
+	public int userNicknameUpdate(UserVO user);
+
+	public int userPhoneUpdate(UserVO user);
+}
