@@ -55,15 +55,36 @@
 	</resultMap>
 
 	<select id="paymentList" parameterType="payment" resultMap="paymentResultMap">
-		SELECT
-			distinct pay.merchant_uid,
-			rownum ro, pay.payment_num as payment_num, pay.project_num AS project_num, to_char(pay.payment_date,'YYYY-MM-DD') AS payment_date,
-			pay.billing_key, pay.user_num AS user_num, pay.delivery_YN,
-			proj.sts as sts, proj.title AS title
-		FROM w_payment pay
-		JOIN w_project proj ON pay.project_num = proj.project_num
-		WHERE pay.user_num = #{userNum, jdbcType=VARCHAR}
-		ORDER BY ro desc
+	SELECT 
+   		pay.merchant_uid,
+    		ROWNUM AS ro,
+   		pay.payment_num AS payment_num,
+    		pay.project_num AS project_num,
+    		proj.title AS title,
+    		TO_CHAR(pay.payment_date,'YYYY-MM-DD') AS payment_date,
+    		pay.billing_key,
+    		proj.sts AS sts,
+    		pay.user_num AS user_num,
+    		pay.DELIVERY_YN
+	FROM (
+    		SELECT 
+        		MAX(pay.merchant_uid) AS merchant_uid,
+        		MAX(pay.payment_num) AS payment_num,
+        		MAX(pay.project_num) AS project_num,
+        		MAX(proj.title) AS title,
+        		MAX(pay.payment_date) AS payment_date,
+       		 	MAX(pay.billing_key) AS billing_key,
+        		MAX(proj.sts) AS sts,
+        		MAX(pay.user_num) AS user_num,
+        		MAX(pay.DELIVERY_YN) AS DELIVERY_YN
+    		FROM w_payment pay
+    		JOIN w_project proj ON pay.project_num = proj.project_num
+    		WHERE pay.user_num = #{userNum, jdbcType=VARCHAR}
+    		GROUP BY pay.merchant_uid
+		) pay
+	JOIN w_project proj ON pay.project_num = proj.project_num
+	WHERE pay.user_num = #{userNum, jdbcType=VARCHAR} 
+	ORDER BY ro DESC
 	</select>
 
 
