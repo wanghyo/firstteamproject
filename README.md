@@ -9,10 +9,13 @@
 
 전통주는 외면 받는 현실을 알게 되어 특색 있고 종류도 다양한 우리나라 고유의 전통주를 알리고 활성화 하고자 기획하게 되었습니다.
 
-### 사용한 언어 
+### 일정관리
+![plan](https://github.com/wanghyo/firstteamproject/assets/141088480/803fd201-e7af-4b53-ab81-689d35504abe)
+
+### 개발 언어 
 JAVA, JSP, HTML, CSS, jQuery, OracleDB
 
-### 사용한 Tool
+### 개발 Tool
 VSCode, Spring Tool Suite4, sqldeveloper
 
 ### 구현 기능
